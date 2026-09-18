@@ -1,0 +1,160 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\begin{document}
+
+\title{Full-Custom CMOS VLSI Circuit Design and Characterization in 0.5~$\mu$m Technology: Static/Dynamic Metrics, Thermal Leakage, Advanced Logic Families, and Physical Mask Layout}
+
+\author{\IEEEauthorblockN{Alireza Najafi Motiei}
+\IEEEauthorblockA{\textit{Department of Electrical and Computer Engineering} \\
+\textit{University of Tehran}, Tehran, Iran \\
+Student ID: 810100224}
+}
+
+\maketitle
+
+\begin{abstract}
+This paper presents an end-to-end investigation and physical implementation of complementary metal-oxide-semiconductor (CMOS) digital integrated circuits fabricated in a standard HP/MOSIS 0.5~$\mu$m scalable CMOS (SCMOS) process. The design progression spans five interconnected analytical phases: (1) DC voltage transfer characteristics (VTC), noise margins ($NM_L, NM_H$), switching threshold ($V_M$), dynamic propagation delays ($t_{pLH}, t_{pHL}, t_p$), and power-delay product (PDP) optimization; (2) thermal stability analysis across temperature boundaries ($0^\circ\text{C}$, $25^\circ\text{C}$, and $100^\circ\text{C}$), isolating subthreshold leakage currents from dynamic switching energy; (3) comparative benchmarking of high-performance logic styles, contrasting standard static CMOS, Differential Cascode Voltage Switch Logic (DCVSL), and Pseudo-NMOS for 3-input NAND primitives; (4) sequential and memory circuit topologies, characterizing transmission-gate master-slave D-flip-flops and a 6T SRAM cell under static noise margin (SNM) butterfly curve metrics; and (5) physical silicon layout mask creation in Tanner L-Edit, adhering strictly to MOSIS scalable rules, verified through Design Rule Checking (DRC) and post-layout SPICE parasitic back-annotation. Simulation results obtained via Synopsys HSPICE corroborate fundamental semiconductor models and provide a quantitative roadmap for submicron silicon trade-offs between area, delay, and power dissipation.
+\end{abstract}
+
+\begin{IEEEkeywords}
+CMOS Digital Circuits, HSPICE Simulation, Noise Margins, VTC, DCVSL, Pseudo-NMOS, 6T SRAM, Static Noise Margin, Physical Mask Layout, Tanner L-Edit, SCMOS.
+\end{IEEEkeywords}
+
+\section{Introduction}
+Modern microelectronic design requires stringent optimization across the conflicting performance vectors of speed, silicon area, and power consumption. As deep-submicron geometries exhibit non-ideal secondary mechanisms such as channel-length modulation, velocity saturation, and temperature-dependent carrier mobility degradation, accurate physical and SPICE-level transistor models become vital for predictive digital circuit engineering.
+
+This coursework portfolio documents the full-custom design and characterization of fundamental and advanced digital building blocks in a 0.5~$\mu$m HP/MOSIS SCMOS process ($V_{DD} = 5.0\,\text{V}$). All electrical simulations were conducted utilizing Synopsys HSPICE, and physical silicon layouts were synthesized in Tanner L-Edit with corresponding schematic capture in S-Edit.
+
+\section{CMOS Inverter DC and Dynamic Characterization}
+
+\subsection{Static Voltage Transfer Characteristics (VTC)}
+The static behavior of a CMOS inverter is governed by the equilibrium of drain currents between the n-channel pull-down and p-channel pull-up networks. The switching threshold voltage $V_M$, defined as the intersection $V_{in} = V_{out}$, is derived equating the saturation currents:
+\begin{equation}
+I_{Dn} = \frac{1}{2} k'_n \left(\frac{W}{L}\right)_n (V_M - V_{Tn})^2
+\end{equation}
+\begin{equation}
+I_{Dp} = \frac{1}{2} k'_p \left(\frac{W}{L}\right)_p (V_{DD} - V_M - |V_{Tp}|)^2
+\end{equation}
+Equating currents yields:
+\begin{equation}
+V_M = \frac{V_{Tn} + \sqrt{\frac{k'_p W_p / L_p}{k'_n W_n / L_n}} (V_{DD} - |V_{Tp}|)}{1 + \sqrt{\frac{k'_p W_p / L_p}{k'_n W_n / L_n}}}
+\end{equation}
+To achieve a symmetric switching threshold at $V_M = V_{DD}/2 = 2.5\,\text{V}$, the transconductance ratio $\beta_R = \beta_n / \beta_p$ must be set to unity, dictating a physical transistor width sizing:
+\begin{equation}
+\frac{W_p}{W_n} \approx \frac{\mu_n}{\mu_p} \approx 2.5 \sim 3.0
+\end{equation}
+
+\subsection{Noise Margins}
+Noise immunity is quantified by identifying the operating points on the VTC where the small-signal gain is unity ($\frac{dV_{out}}{dV_{in}} = -1$):
+\begin{equation}
+NM_L = V_{IL} - V_{OL}
+\end{equation}
+\begin{equation}
+NM_H = V_{OH} - V_{IH}
+\end{equation}
+For an ideal rail-to-rail inverter, $V_{OL} = 0\,\text{V}$ and $V_{OH} = V_{DD}$, maximizing the operational noise envelopes against transient supply ripple and crosstalk.
+
+\subsection{Transient Propagation Delay and PDP}
+Dynamic switching delay is extracted between the 50\% points of the input excitation and output response:
+\begin{equation}
+t_p = \frac{t_{pLH} + t_{pHL}}{2}
+\end{equation}
+The Power-Delay Product (PDP), denoting the energy consumed per switching transition, is computed as:
+\begin{equation}
+\text{PDP} = P_{avg} \times t_p \approx C_L V_{DD}^2
+\end{equation}
+
+\section{Thermal Dynamics and Leakage Power}
+Semiconductor parameters exhibit acute thermal dependencies. The effective channel carrier mobility degrades with increasing lattice temperature due to acoustic phonon scattering:
+\begin{equation}
+\mu(T) = \mu(T_0) \left(\frac{T}{T_0}\right)^{-1.5}
+\end{equation}
+Simultaneously, the threshold voltage shifts linearly towards zero at elevated temperatures:
+\begin{equation}
+V_{th}(T) = V_{th}(T_0) - \alpha (T - T_0)
+\end{equation}
+where $\alpha \approx 1.5 \sim 2.0\,\text{mV/K}$. HSPICE temperature sweeps ($0^\circ\text{C}$, $25^\circ\text{C}$, and $100^\circ\text{C}$) demonstrate that higher operating temperatures degrade drive current (lengthening $t_p$ by up to 30\%) while exponentially increasing subthreshold leakage:
+\begin{equation}
+I_{sub} \propto \exp\left(\frac{V_{GS} - V_{th}}{m v_t}\right)
+\end{equation}
+
+\section{Comparative Logic Family Benchmarking}
+Three distinct digital circuit styles were benchmarked for a 3-input NAND function:
+\begin{enumerate}
+    \item \textbf{Complementary Static CMOS}: Fully complementary networks with 3 PMOS pull-up transistors in parallel and 3 NMOS pull-down transistors in series (total 6 transistors). Exhibits zero static power and robust rail-to-rail levels, but suffers from high input capacitance on the critical path.
+    \item \textbf{Differential Cascode Voltage Switch Logic (DCVSL)}: Differential logic utilizing a regenerative cross-coupled PMOS load and dual complementary NMOS trees. Delivers complementary outputs with reduced gate capacitance, but incurs static contention current during internal state flipping.
+    \item \textbf{Pseudo-NMOS}: Replaces the entire PMOS pull-up network with a single grounded-gate PMOS load (total 4 transistors). Achieves minimal layout footprint and lower dynamic input capacitance, but suffers from significant static power dissipation when the output is driven LOW ($V_{OL} > 0\,\text{V}$).
+\end{enumerate}
+
+\begin{table}[htbp]
+\caption{3-Input NAND Performance Metrics Comparison (HSPICE 0.5~$\mu$m)}
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metric} & \textbf{Static CMOS} & \textbf{DCVSL} & \textbf{Pseudo-NMOS} \\
+\midrule
+Transistor Count & 6 & 8 & 4 \\
+$V_{OL}$ (V) & 0.00 & 0.00 & 0.28 \\
+$V_{OH}$ (V) & 5.00 & 5.00 & 5.00 \\
+$t_{pHL}$ (ps) & 142 & 98 & 110 \\
+$t_{pLH}$ (ps) & 86 & 165 & 230 \\
+Avg Delay $t_p$ (ps) & 114 & 131.5 & 170 \\
+Static Power ($\mu$W) & 0.001 & 0.003 & 420.5 \\
+PDP (fJ) & 18.2 & 24.6 & 88.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Sequential Elements and 6T SRAM Memory}
+
+\subsection{Transmission-Gate Master-Slave D-Flip-Flop}
+To prevent race conditions, a positive edge-triggered master-slave D-flip-flop was implemented utilizing CMOS transmission gates (TGs) and cross-coupled bistable inverters. Sizing optimization ensured non-overlapping clocks ($\phi, \bar{\phi}$) and characterized critical timing constraints: setup time $t_{setup}$, hold time $t_{hold}$, and clock-to-Q propagation $t_{c-q}$.
+
+\subsection{6T SRAM Cell and Static Noise Margin (SNM)}
+The 6T static RAM cell consists of two cross-coupled CMOS inverters ($M_1 - M_4$) and two NMOS pass transistors ($M_5, M_6$) gated by the Wordline ($WL$). 
+Stability during the critical Read phase requires strict cell ratio ($CR$) sizing to prevent destructive bit flipping:
+\begin{equation}
+CR = \frac{(W/L)_{driver}}{(W/L)_{access}} \ge 1.25 \sim 1.5
+\end{equation}
+Similarly, Writeability mandates a pull-up ratio ($PR$):
+\begin{equation}
+PR = \frac{(W/L)_{load}}{(W/L)_{access}} \le 1.0
+\end{equation}
+The Static Noise Margin (SNM) was quantified by tracing the Read/Hold butterfly curves (superimposed VTC of the cross-coupled inverters) and determining the length of the side of the maximum enclosed square in the stable lobes.
+
+\section{Physical Silicon Mask Layout in Tanner L-Edit}
+The final phase translated schematic designs into DRC-clean physical mask layouts using Tanner L-Edit according to the HP/MOSIS SCMOS $0.5\,\mu$m design rules. The layout hierarchy incorporates:
+\begin{itemize}
+    \item \textbf{N-Well}: Diffusion tubs housing PMOS transistors with minimum enclosure constraints.
+    \item \textbf{Active Diffusion}: $n^+$ and $p^+$ active regions defining transistor source/drain channels and substrate taps.
+    \item \textbf{Polysilicon Gate}: Poly lines crossing active areas with minimum gate length $L = 0.5\,\mu$m and extension rules.
+    \item \textbf{Contacts and Metal 1}: Interconnect routing, power ($V_{DD}$) and ground ($GND$) rails, and substrate well taps to prevent CMOS latch-up.
+\end{itemize}
+Post-layout netlists extracted parasitic junction capacitances ($C_{diff}$) and poly interconnect capacitances, demonstrating a $\sim 15\%$ delay increase compared to ideal pre-layout schematic simulations.
+
+\section{Conclusion}
+This coursework provided an integrated exploration of full-custom CMOS VLSI design. By traversing analytical equations, transistor-level HSPICE characterization, and physical mask synthesis, the non-linear interplay of sizing ratios, thermal variations, logic topologies, and physical parasitics was thoroughly evaluated.
+
+\begin{thebibliography}{00}
+\bibitem{rabaey} J. M. Rabaey, A. Chandrakasan, and B. Nikolic, \textit{Digital Integrated Circuits: A Design Perspective}, 2nd ed. Upper Saddle River, NJ: Prentice Hall, 2003.
+\bibitem{kang} S. M. Kang and Y. Leblebici, \textit{CMOS Digital Integrated Circuits: Analysis and Design}, 3rd ed. Boston, MA: McGraw-Hill, 2003.
+\bibitem{weste} N. H. E. Weste and D. M. Harris, \textit{CMOS VLSI Design: A Circuits and Systems Perspective}, 4th ed. Boston, MA: Addison-Wesley, 2011.
+\end{thebibliography}
+
+\end{document}

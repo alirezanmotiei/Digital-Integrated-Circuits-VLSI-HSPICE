@@ -1,0 +1,44 @@
+# ==============================================================================
+# Git Ignore Configuration - Digital-Integrated-Circuits-VLSI-HSPICE
+# ==============================================================================
+
+# HSPICE Simulation Output & Intermediate Files
+*.lis
+*.tr[0-9]*
+*.sw[0-9]*
+*.ic[0-9]*
+*.st[0-9]*
+*.pa[0-9]*
+*.ac[0-9]*
+*.ft[0-9]*
+*.val
+*.out
+*.log
+*.pwr
+*.measure
+
+# Tanner EDA / L-Edit / S-Edit Temporary & Backup Files
+*.bak
+*.bk[0-9]*
+*.tmp
+*~
+*.drc_errors
+*.lpc
+
+# LaTeX Build Outputs
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.synctex.gz
+*.toc
+
+# OS / Editor Metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.idea/
