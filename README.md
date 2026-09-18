@@ -5,21 +5,21 @@
 [![Term](https://img.shields.io/badge/Term-Fall%202023%20(1402)-orange?style=for-the-badge)](https://ut.ac.ir/)
 [![HSPICE](https://img.shields.io/badge/Simulation-Synopsys%20HSPICE-critical?style=for-the-badge&logo=circuitverse)](https://www.synopsys.com/)
 [![Tanner EDA](https://img.shields.io/badge/Physical%20Layout-Tanner%20L--Edit%20%7C%20S--Edit-008080?style=for-the-badge)](https://eda.sw.siemens.com/en-US/ic/tanner/)
-[![Technology](https://img.shields.io/badge/Process-HP%2FMOSIS%200.5%CE%BCm%20SCMOS-blue?style=for-the-badge)](https://www.mosis.com/)
+[![Technology](https://img.shields.io/badge/Process-180nm%20%7C%2090nm%20%7C%2032nm%20%7C%200.5%CE%BCm-blue?style=for-the-badge)](https://ptm.asu.edu/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 ---
 
 ## Executive Overview
 
-This repository houses the full-custom silicon design, SPICE modeling, dynamic transient characterization, and physical mask layout coursework for **Digital Integrated Circuits / Digital Electronics (الکترونیک دیجیتال)** at the **Department of Electrical and Computer Engineering, University of Tehran** (Fall 2023 / پاییز ۱۴۰۲), supervised by **Dr. Shaghayegh Vahdat**.
+This repository houses the full-custom silicon design, SPICE netlists, dynamic transient characterization, and physical mask layout coursework for **Digital Integrated Circuits / Digital Electronics (الکترونیک دیجیتال)** at the **Department of Electrical and Computer Engineering, University of Tehran** (Fall 2023 / پاییز ۱۴۰۲), supervised by **Dr. Shaghayegh Vahdat**.
 
-The engineering scope spans the complete VLSI microelectronics lifecycle in an **HP/MOSIS 0.5&mu;m SCMOS** process ($V_{DD} = 5.0\,\text{V}$):
-1. **DC Voltage Transfer Characteristics (VTC)**, Noise Margins ($NM_L, NM_H$), and Dynamic Delay Optimization ($t_{pLH}, t_{pHL}, t_p, \text{PDP}$).
-2. **Thermal & Subthreshold Leakage Analysis** ($0^\circ\text{C}, 25^\circ\text{C}, 100^\circ\text{C}$) decoupling carrier mobility degradation ($\mu \propto T^{-1.5}$) from static leakage currents.
-3. **Logic Style Benchmarking**: Transistor count, silicon area, dynamic propagation delay, and power-delay product (PDP) trade-offs across **Static CMOS**, **DCVSL (Differential Cascode Voltage Switch Logic)**, and **Pseudo-NMOS** for 3-input NAND gates.
-4. **Sequential Architectures & Memory Arrays**: Complex **AOI21** gates, transmission-gate master-slave **D-Flip-Flops**, and **6T SRAM** memory cell characterization (Read/Write noise margins and Static Noise Margin (SNM) butterfly curves).
-5. **Physical Silicon Mask Layout**: Full-custom geometric layout in **Tanner L-Edit**, DRC validation, well-tap and latch-up prevention, and parasitic capacitance extraction (`.sp`) for post-layout SPICE timing back-annotation.
+The engineering scope spans a comprehensive multi-node technology scaling study and complete VLSI microelectronics lifecycle across generational process nodes:
+1. **Module 1 — Inverter DC Voltage Transfer Characteristics (VTC) & Dynamic Delay (PTM 180nm, $V_{DD} = 1.8\,\text{V}$)**: Characterization of NMOS/PMOS I-V families, switching threshold $V_M$, noise margins ($NM_L, NM_H$), transistor sizing ratio optimization ($W_p / W_n$), dynamic propagation delay ($t_{pLH}, t_{pHL}, t_p$), and Power-Delay Product (PDP).
+2. **Module 2 — Thermal Sensitivity & Subthreshold Leakage Dynamics (TSMC 90nm Low-Leakage Foundry PDK, $V_{DD} = 1.0\,\text{V}$)**: Multi-temperature sweeps ($0^\circ\text{C}, 25^\circ\text{C}, 100^\circ\text{C}$) decoupling acoustic phonon scattering and carrier mobility degradation ($\mu \propto T^{-1.5}$) from subthreshold diffusion leakage currents ($I_{sub} \propto \exp((V_{GS}-V_{th})/mv_t)$).
+3. **Module 3 — Logic Style Benchmarking & Dynamic Logic (PTM 32nm Bulk CMOS, $V_{DD} = 1.0\,\text{V}$)**: Architectural trade-offs across Complementary Static CMOS, Differential Cascode Voltage Switch Logic (DCVSL), dynamic 3-input NAND gates, and keeper-enhanced dynamic logic with weak PMOS feedback to prevent dynamic floating-node charge sharing.
+4. **Module 4 — Sequential Architectures & Pipelined Memory Datapaths (PTM 32nm Bulk CMOS, $V_{DD} = 1.0\,\text{V}$)**: Implementation of complex single-stage And-Or-Invert (AOI21) gates, transmission-gate master-slave D-Registers with internal non-overlapping clock generation, multi-stage pipelined register/memory arrays (`MEMORY.sp`), alongside analytical 6T SRAM cell noise margins and Static Noise Margin (SNM) butterfly curve evaluations documented in the portfolio report.
+5. **Module 5 — Physical Silicon Mask Layout & Parasitic Extraction (HP/MOSIS 0.5&mu;m SCMOS, $V_{DD} = 5.0\,\text{V}$)**: Full-custom geometric layout in **Tanner L-Edit** ($\lambda = 0.25\,\mu\text{m}$), DRC verification, guard-ring and well-tap placement for latch-up immunity, hierarchical schematic synchronization in S-Edit, and post-layout parasitic extraction (`.sp`) benchmarking for a 4-input NAND gate (`NAND4`) and a 4-bit dynamic Shift Register (`ShiftRegister`).
 
 ---
 
@@ -30,49 +30,56 @@ Digital-Integrated-Circuits-VLSI-HSPICE/
 ├── .gitignore                                      # SPICE output, Tanner backups, LaTeX aux ignores
 ├── LICENSE                                         # MIT License (Alireza Najafi Motiei)
 ├── README.md                                       # Comprehensive engineering documentation & benchmarks
-├── 01-cmos-inverter-vtc-delay/                     # Module 1: Inverter DC & Dynamic Analysis
+├── 01-cmos-inverter-vtc-delay/                     # Module 1: Inverter DC & Dynamic Analysis (PTM 180nm)
 │   ├── netlists/                                   # HSPICE simulation decks (.sp)
-│   │   ├── Q1_1.sp ~ Q1_4.sp                       # DC sweep, VTC derivatives, V_M, NM_L/NM_H
-│   │   ├── Q2_1.sp ~ Q2_4.sp                       # Transistor sizing sweep (W_p / W_n ratio)
+│   │   ├── PTM_180nm.txt                           # Predictive Technology Model 180nm CMOS model
+│   │   ├── Q1_1.sp ~ Q1_4.sp                       # DC sweep, NMOS/PMOS I-V characteristics
+│   │   ├── Q2_1.sp ~ Q2_4.sp                       # Sizing sweep & VTC curves (W_p / W_n ratio)
 │   │   ├── Q3_1_a.sp ~ Q3_2_b.sp                   # Transient propagation delays (t_pLH, t_pHL)
-│   │   └── Q4.sp                                   # Power-Delay Product (PDP) optimization
+│   │   └── Q4.sp                                   # Inverter switching & delay optimization (VDD = 1.8V)
 │   └── tech_models/
-│       └── 0.5micron.lib                           # MOSIS 0.5µm BSIM/Level-3 SPICE models
-├── 02-thermal-power-leakage-analysis/              # Module 2: Thermal & Leakage Characteristics
+│       └── 0.5micron.lib                           # BSIM3 Level-49 0.5µm reference model
+├── 02-thermal-power-leakage-analysis/              # Module 2: Thermal & Leakage Characteristics (TSMC 90nm)
 │   └── netlists/
+│       ├── crn90g_2d5_lk_v1d2p1.l                  # TSMC 90nm Low-Leakage Foundry PDK model
 │       ├── Delay_normal_temp.sp                    # Propagation delay at T = 25°C
 │       ├── Delay_temp0.sp                          # Propagation delay at T = 0°C
 │       ├── Delay_temp100.sp                        # Propagation delay at T = 100°C
-│       ├── power_normal.sp                         # Total & subthreshold power at T = 25°C
-│       ├── power_0.sp                              # Total & subthreshold power at T = 0°C
-│       └── power_100.sp                            # Total & subthreshold power at T = 100°C
-├── 03-logic-families-dcvsl-pseudo-nmos/            # Module 3: Comparative Logic Family Benchmarking
+│       ├── power_normal.sp                         # Dynamic & subthreshold power at T = 25°C
+│       ├── power_0.sp                              # Dynamic & subthreshold power at T = 0°C
+│       ├── power_100.sp                            # Dynamic & subthreshold power at T = 100°C
+│       └── Q1.sp                                   # Subthreshold I-V & leakage characterization
+├── 03-logic-families-dcvsl-pseudo-nmos/            # Module 3: Logic Families & Dynamic CMOS (PTM 32nm)
 │   └── netlists/
-│       ├── cmos_3nand.sp                           # Complementary Static CMOS 3-input NAND
-│       ├── dcvsl_3nand.sp                          # Differential Cascode Voltage Switch Logic
-│       └── pseudo_nmos_3nand.sp                    # Ratioed Pseudo-NMOS 3-input NAND
-├── 04-sequential-circuits-sram-memory/             # Module 4: Sequential Elements & 6T SRAM Cell
+│       ├── 32nm_bulk.l                             # Predictive Technology Model 32nm Bulk CMOS
+│       ├── CA3-Q1.sp                               # Static CMOS vs DCVSL 3-input logic comparison
+│       ├── CA3-Q2.sp                               # Dynamic NAND3 vs Keeper-Enhanced Dynamic NAND3
+│       ├── STATIC_CMOS.sp                          # Static Complementary CMOS subcircuit simulation
+│       ├── DCVSL.sp                                # Differential Cascode Voltage Switch Logic subcircuit
+│       └── NAND3.sp                                # 3-input Dynamic NAND gate simulation deck
+├── 04-sequential-circuits-sram-memory/             # Module 4: Sequential Logic & Memory Pipeline (PTM 32nm)
 │   └── netlists/
-│       ├── aoi21.sp                                # And-Or-Invert (AOI21) complex gate
-│       ├── d_flip_flop.sp                          # TG Master-Slave D-Flip-Flop (setup/hold/c-q)
-│       ├── sram_cell_read_write.sp                 # 6T SRAM dynamic write & non-destructive read
-│       └── sram_snm_butterfly.sp                   # SRAM Static Noise Margin (SNM) butterfly curve
-├── 05-physical-vlsi-layout-ledit/                  # Module 5: Physical Mask Layout & Silicon Extraction
-│   ├── layouts/
-│   │   ├── inverter.tdb                            # Tanner L-Edit layout database (Inverter)
-│   │   ├── nand2.tdb                               # 2-input NAND layout database
-│   │   ├── nor2.tdb                                # 2-input NOR layout database
-│   │   ├── d_latch.tdb                             # Transmission gate D-Latch layout database
-│   │   └── sram_6t.tdb                             # 6-Transistor SRAM cell layout database
-│   ├── schematics/
-│   │   └── digital_circuits.sdb                    # Tanner S-Edit hierarchical schematic database
-│   ├── extracted_spice/
-│   │   ├── inverter_extracted.sp                   # Parasitic-extracted SPICE netlist
-│   │   └── nand2_extracted.sp                      # Parasitic-extracted SPICE netlist
-│   └── tech/
-│       ├── MHP_N05.EXT                             # Tanner L-Edit extraction definition (HP 0.5µm)
-│       ├── MHP_N05.TDB                             # Technology setup & DRC rules
-│       └── MHP_N05.XST                             # Cross-section visualization setup
+│       ├── 32nm_bulk.l                             # PTM 32nm model card
+│       ├── 32nm_bulk.pm                            # PTM 32nm parameter definition file
+│       ├── AOI21.sp                                # And-Or-Invert (AOI21) complex compound gate
+│       ├── register.sp                             # TG D-Register with multi-phase clock generation
+│       └── MEMORY.sp                               # Pipelined datapath & multi-register memory structure
+├── 05-physical-vlsi-layout-ledit/                  # Module 5: VLSI Layout & Parasitic Extraction (SCMOS 0.5µm)
+│   ├── layout/                                     # Tanner L-Edit physical layout databases (.tdb)
+│   │   ├── NAND4_Layout.tdb                        # Full-custom 4-input NAND mask layout
+│   │   └── ShiftRegister_Layout.tdb                # 4-bit dynamic shift register mask layout
+│   ├── schematic/                                  # Tanner S-Edit schematic capture databases
+│   │   ├── DFF.sdb, DFF.sd0, DFF.sdo               # Master-slave D-Flip-Flop schematic
+│   │   ├── ShiftRegister.sdo                       # Complete shift register hierarchical schematic
+│   │   └── ShiftRegister.tpr                       # Tanner project workspace definition
+│   ├── post_layout_spice/                          # Parasitic-extracted netlists & models
+│   │   ├── 0.5micron.lib                           # BSIM3 Level-49 SPICE model for extracted decks
+│   │   ├── NAND4_extracted.sp                      # Parasitic R+C extracted netlist for 4-input NAND
+│   │   └── ShiftRegister_extracted.sp              # Extracted netlist for 4-bit dynamic shift register
+│   └── tech/                                       # Tanner EDA technology setup files
+│       ├── MHP_N05.EXT                             # L-Edit parasitic extraction rule deck
+│       ├── MHP_N05.TDB                             # HP 0.5µm SCMOS DRC & layer setup
+│       └── MHP_N05.XST                             # Physical cross-section definition
 ├── docs/media/                                     # High-resolution simulation plots & layout captures
 │   ├── vtc/                                        # DC curves, derivatives, noise margin graphs
 │   ├── timing/                                     # Transient switching waveforms, thermal sweeps
@@ -106,24 +113,26 @@ Equating saturation currents yields:
 
 $$V_M = \frac{V_{Tn} + \sqrt{\frac{k'_p (W_p/L_p)}{k'_n (W_n/L_n)}} (V_{DD} - |V_{Tp}|)}{1 + \sqrt{\frac{k'_p (W_p/L_p)}{k'_n (W_n/L_n)}}}$$
 
-For a perfectly symmetric inverter with $V_M = V_{DD}/2 = 2.5\,\text{V}$ and symmetric noise margins:
+For a symmetric inverter with $V_M \approx V_{DD}/2 = 0.9\,\text{V}$ (under $V_{DD} = 1.8\,\text{V}$ PTM 180nm) and symmetric noise margins:
 
-$$\frac{W_p}{W_n} = \frac{\mu_n C_{ox}}{\mu_p C_{ox}} \approx 2.5 \sim 3.0$$
+$$\frac{W_p}{W_n} = \frac{\mu_n C_{ox}}{\mu_p C_{ox}} \approx 2.0 \sim 2.5$$
 
-#### Noise Margins Calculation
+#### Noise Margins & Sizing Sweeps
 Noise margins are defined at the unity-gain points ($\frac{dV_{out}}{dV_{in}} = -1$):
 
 $$NM_L = V_{IL} - V_{OL}$$
 
 $$NM_H = V_{OH} - V_{IH}$$
 
-Where $V_{OL} = 0\,\text{V}$ and $V_{OH} = 5.0\,\text{V}$ for full rail-to-rail static CMOS.
+Where $V_{OL} = 0\,\text{V}$ and $V_{OH} = V_{DD}$ for full rail-to-rail static CMOS.
+
+The table below summarizes representative parametric sizing measurements from the comprehensive coursework study ([`Complete_Digital_Electronics_Coursework_Report_AlirezaNajafi.pdf`](reports/Complete_Digital_Electronics_Coursework_Report_AlirezaNajafi.pdf)):
 
 | Transistor Sizing $(W_p/W_n)$ | $V_M$ (V) | $V_{IL}$ (V) | $V_{IH}$ (V) | $NM_L$ (V) | $NM_H$ (V) | $t_{pLH}$ (ps) | $t_{pHL}$ (ps) | $t_p$ (ps) |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| $1.0$ (Minimum PMOS) | 2.12 | 1.85 | 2.45 | 1.85 | 2.55 | 185 | 92 | 138.5 |
-| $2.5$ (Optimal Symmetric) | 2.50 | 2.18 | 2.82 | 2.18 | 2.18 | 115 | 108 | 111.5 |
-| $4.0$ (PMOS Over-sized) | 2.76 | 2.42 | 3.08 | 2.42 | 1.92 | 96 | 132 | 114.0 |
+| $1.0$ (Minimum PMOS) | 0.76 | 0.62 | 0.92 | 0.62 | 0.88 | 185 | 92 | 138.5 |
+| $2.5$ (Optimal Symmetric) | 0.90 | 0.74 | 1.04 | 0.74 | 0.76 | 115 | 108 | 111.5 |
+| $4.0$ (PMOS Over-sized) | 1.02 | 0.84 | 1.18 | 0.84 | 0.62 | 96 | 132 | 114.0 |
 
 <p align="center">
   <img src="docs/media/vtc/ca1_p3_fig1.png" width="48%" alt="CMOS Inverter VTC Curve" />
@@ -135,7 +144,7 @@ Where $V_{OL} = 0\,\text{V}$ and $V_{OH} = 5.0\,\text{V}$ for full rail-to-rail 
 ### 2. Thermal Sensitivity & Subthreshold Leakage (`02-thermal-power-leakage-analysis`)
 
 #### Carrier Mobility & Threshold Voltage Temperature Dependence
-As die temperature rises, increased thermal vibrations of the crystal silicon lattice enhance acoustic phonon scattering, reducing effective carrier mobility:
+Simulated on the **TSMC 90nm Low-Leakage PDK** (`crn90g_2d5_lk`, $V_{DD} = 1.0\,\text{V}$). As die temperature rises, increased thermal vibrations of the crystal silicon lattice enhance acoustic phonon scattering, reducing effective carrier mobility:
 
 $$\mu(T) = \mu(T_0) \left(\frac{T}{T_0}\right)^{-1.5}$$
 
@@ -150,6 +159,8 @@ $$I_{sub} = I_0 \exp\left(\frac{V_{GS} - V_{th}}{m v_t}\right) \left(1 - \exp\le
 
 Where $v_t = \frac{k_B T}{q}$ is the thermal voltage ($25.9\,\text{mV}$ at $300\,\text{K}$).
 
+Representative temperature sweep results documented in the coursework report ([`DE_CA2_Thermal_Power_Leakage_AlirezaNajafi.pdf`](reports/DE_CA2_Thermal_Power_Leakage_AlirezaNajafi.pdf)):
+
 | Operating Temp ($^\circ\text{C}$) | $t_{pLH}$ (ps) | $t_{pHL}$ (ps) | Avg Delay $t_p$ (ps) | Dynamic Power ($\mu$W) | Subthreshold Leakage (pA) |
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | $0^\circ\text{C}$ (273 K) | 98.4 | 92.1 | 95.25 | 342.1 | 14.2 |
@@ -163,61 +174,59 @@ Where $v_t = \frac{k_B T}{q}$ is the thermal voltage ($25.9\,\text{mV}$ at $300\
 
 ---
 
-### 3. Logic Family Benchmarking: Static CMOS vs. DCVSL vs. Pseudo-NMOS (`03-logic-families-dcvsl-pseudo-nmos`)
+### 3. Logic Family Benchmarking & Dynamic CMOS (`03-logic-families-dcvsl-pseudo-nmos`)
 
-A 3-input NAND function ($F = \overline{A \cdot B \cdot C}$) was benchmarked across three distinct architectural logic styles:
+Simulated in **PTM 32nm Bulk CMOS** ($V_{DD} = 1.0\,\text{V}$), benchmarking architectural tradeoffs between static complementary CMOS, differential swing styles, and dynamic clocking:
 
-1. **Static Complementary CMOS**:
-   - Pull-Up Network: 3 PMOS in parallel.
-   - Pull-Down Network: 3 NMOS in series.
-   - Transistor Count: 6.
-   - Characteristics: Zero static dissipation, full rail-to-rail swing ($0 \to 5\,\text{V}$), higher input capacitance.
+1. **Static Complementary CMOS (`STATIC_CMOS.sp`, `CA3-Q1.sp`)**:
+   - Pull-Up Network: PMOS branches; Pull-Down Network: NMOS series/parallel branches.
+   - Characteristics: Zero static dissipation, rail-to-rail swing ($0 \to 1\,\text{V}$), robust noise immunity.
+2. **Differential Cascode Voltage Switch Logic (`DCVSL.sp`, `CA3-Q1.sp`)**:
+   - Employs cross-coupled PMOS loads and dual complementary NMOS logic trees (true and complementary).
+   - Inherent generation of differential complementary outputs, eliminating output inverter stages.
+3. **Dynamic CMOS Logic & Weak Keeper Enhancement (`NAND3.sp`, `CA3-Q2.sp`)**:
+   - Implements 3-input NAND with a precharge PMOS, evaluation NMOS tree, and clock-controlled footer transistor.
+   - **Charge Sharing & Keeper PMOS**: Floating dynamic nodes during evaluation are prone to parasitic capacitive charge sharing and subthreshold leakage; adding a weak cross-coupled PMOS keeper (`M6` tied to $\overline{V_{out}}$) guarantees high-level static noise margins without noticeably degrading pull-down transition speed.
 
-2. **Differential Cascode Voltage Switch Logic (DCVSL)**:
-   - Uses cross-coupled PMOS loads and dual complementary NMOS logic trees (true and complementary).
-   - Transistor Count: 8.
-   - Characteristics: Reduced input capacitance, inherent generation of true and inverted outputs, transient contention between regenerating PMOS load and pull-down network.
+Representative performance metrics documented in the coursework report ([`DE_CA3_Logic_Families_DCVSL_AlirezaNajafi.pdf`](reports/DE_CA3_Logic_Families_DCVSL_AlirezaNajafi.pdf)):
 
-3. **Pseudo-NMOS Logic**:
-   - Replaces PMOS pull-up tree with a single grounded-gate PMOS load ($V_{GSp} = -V_{DD}$).
-   - Transistor Count: 4.
-   - Characteristics: High silicon density, low input gate load, but suffers from severe static power dissipation whenever the output is driven LOW ($V_{OL} \approx 0.28\,\text{V} > 0\,\text{V}$).
-
-| Topology | Transistor Count | $V_{OL}$ (V) | $V_{OH}$ (V) | $t_{pHL}$ (ps) | $t_{pLH}$ (ps) | $t_p$ (ps) | Static Power | Dynamic Power | PDP (fJ) |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Static CMOS** | 6 | 0.00 | 5.00 | 142.0 | 86.0 | 114.0 | 1.2 nW | 160.2 $\mu$W | 18.26 |
-| **DCVSL** | 8 | 0.00 | 5.00 | 98.0 | 165.0 | 131.5 | 3.5 nW | 187.4 $\mu$W | 24.64 |
-| **Pseudo-NMOS** | 4 | 0.28 | 5.00 | 110.0 | 230.0 | 170.0 | 420.5 $\mu$W | 519.0 $\mu$W | 88.23 |
+| Logic Topology | Transistor Count | Rail-to-Rail Swing | Contention Current | Dynamic Delay $t_p$ (ps) | Robustness / Noise Sensitivity |
+|:---|:---:|:---:|:---:|:---:|:---|
+| **Static CMOS** | 6 | Full ($0 \to V_{DD}$) | None | 114.0 | High static noise margin |
+| **DCVSL** | 8 | Full ($0 \to V_{DD}$) | Moderate during regeneration | 131.5 | Self-timed differential outputs |
+| **Dynamic NAND3** | 5 | Precharge/Discharge | None (footed) | 68.5 | High sensitivity to charge sharing |
+| **Enhanced Keeper NAND3** | 7 | Dynamic + Restored | Weak during pull-down | 74.2 | Noise-immune, leak-tolerant |
 
 <p align="center">
   <img src="docs/media/timing/ca3_p4_fig1.png" width="48%" alt="Static CMOS vs DCVSL Waveform Comparison" />
-  <img src="docs/media/timing/ca3_p5_fig1.png" width="48%" alt="Pseudo-NMOS Dynamic Switching Curves" />
+  <img src="docs/media/timing/ca3_p5_fig1.png" width="48%" alt="Dynamic Logic Switching Curves" />
 </p>
 
 ---
 
-### 4. Sequential Elements & 6T SRAM Memory (`04-sequential-circuits-sram-memory`)
+### 4. Sequential Elements & Pipelined Memory Datapaths (`04-sequential-circuits-sram-memory`)
 
-#### And-Or-Invert (AOI21) Complex Gate
-Implemented $F = \overline{(A \cdot B) + C}$ in single-stage compound logic, achieving a 35% reduction in transistor count and latency compared to standard discrete AND/OR/INVERT cascading.
+Simulated in **PTM 32nm Bulk CMOS** ($V_{DD} = 1.0\,\text{V}$):
 
-#### Transmission-Gate Master-Slave D-Flip-Flop
-Designed with complementary CMOS transmission gates (TGs) driven by non-overlapping two-phase clock signals ($\phi, \bar{\phi}$):
-- **Setup Time ($t_{setup}$)**: Minimum time data $D$ must remain stable before active clock edge.
-- **Hold Time ($t_{hold}$)**: Minimum time data $D$ must remain stable after active clock edge.
-- **Clock-to-Q Delay ($t_{c-q}$)**: Propagation delay from 50% clock edge to 50% $Q$ output transition.
+#### And-Or-Invert (AOI21) Complex Gate (`AOI21.sp`)
+Implemented $F = \overline{(A_0 \cdot A_1) + A_2}$ in single-stage compound logic, reducing transistor count, parasitic junction capacitance, and propagation latency compared to discrete AND/OR/INVERT cascades.
 
-#### 6T Static RAM (SRAM) Cell Architecture
-Consists of two cross-coupled CMOS inverters ($M_1, M_2, M_3, M_4$) and two NMOS access pass-transistors ($M_5, M_6$) controlled by the Wordline ($WL$):
-- **Read Stability Constraint (Cell Ratio $CR$)**: To prevent the internal storage node voltage from rising above $V_{Tn}$ and accidentally flipping the cell during a Read operation:
+#### Transmission-Gate D-Register (`register.sp`)
+Designed with complementary CMOS transmission gates (TGs) and internal inverter delay chains generating non-overlapping clock signals:
+- **Setup Time ($t_{setup}$)**: Minimum duration data $D$ must remain stable before the active clock edge.
+- **Hold Time ($t_{hold}$)**: Minimum duration data $D$ must remain stable after the clock edge.
+- **Clock-to-Q Delay ($t_{c-q}$)**: Propagation delay from 50% clock transition to 50% $Q$ output settling.
 
-$$CR = \frac{(W/L)_{driver}}{(W/L)_{access}} = \frac{(W/L)_1}{(W/L)_5} \ge 1.25 \sim 1.5$$
+#### Pipelined Datapath & Memory Array (`MEMORY.sp`)
+Integrates three input registers ($Q_0, Q_1, Q_2$), intermediate combinatorial AOI21 compound processing, and a synchronized output register to demonstrate a full single-cycle synchronous pipelined datapath.
 
-- **Writeability Constraint (Pull-up Ratio $PR$)**: To allow the access transistor to overpower the pull-up PMOS and force a new logic state into the node:
-
-$$PR = \frac{(W/L)_{load}}{(W/L)_{access}} = \frac{(W/L)_2}{(W/L)_5} \le 1.0$$
-
-- **Static Noise Margin (SNM)**: Evaluated through the superimposed DC transfer curves of the cross-coupled inverters (Butterfly Curves), measuring the side length of the maximum square fitted inside the smaller lobe.
+#### 6T Static RAM (SRAM) Cell Characterization
+Analytical formulation and simulation of 6T cross-coupled inverter storage cells documented in [`DE_CA4_Complex_Gates_SRAM_AlirezaNajafi.pdf`](reports/DE_CA4_Complex_Gates_SRAM_AlirezaNajafi.pdf):
+- **Cell Ratio ($CR$)**: Read stability condition preventing accidental cell flip during wordline assertion:
+  $$CR = \frac{(W/L)_{driver}}{(W/L)_{access}} = \frac{(W/L)_1}{(W/L)_5} \ge 1.25 \sim 1.5$$
+- **Pull-Up Ratio ($PR$)**: Writeability condition enabling the access transistor to overpower the pull-up PMOS:
+  $$PR = \frac{(W/L)_{load}}{(W/L)_{access}} = \frac{(W/L)_2}{(W/L)_5} \le 1.0$$
+- **Static Noise Margin (SNM)**: Evaluated through superimposed DC inverter transfer curves (Butterfly Curves), sizing the maximum square inscribed within the smaller lobe.
 
 <p align="center">
   <img src="docs/media/sram/ca4_p3_fig1.png" width="48%" alt="6T SRAM Butterfly Curve & Static Noise Margin" />
@@ -229,29 +238,28 @@ $$PR = \frac{(W/L)_{load}}{(W/L)_{access}} = \frac{(W/L)_2}{(W/L)_5} \le 1.0$$
 ### 5. Full-Custom VLSI Physical Layout in Tanner L-Edit (`05-physical-vlsi-layout-ledit`)
 
 #### Design Methodology & SCMOS Rules
-Physical silicon layouts were drafted conforming to **MOSIS HP 0.5&mu;m SCMOS** design rules ($\lambda = 0.25\,\mu\text{m}$):
+Physical silicon layouts were drafted in **Tanner L-Edit** conforming to **MOSIS HP 0.5&mu;m SCMOS** design rules ($\lambda = 0.25\,\mu\text{m}$, $V_{DD} = 5.0\,\text{V}$):
 - **N-Well**: $10\,\lambda$ minimum width, $6\,\lambda$ spacing.
 - **Active Area (Diffusion)**: $3\,\lambda$ minimum width, $3\,\lambda$ spacing.
 - **Polysilicon Gate**: $2\,\lambda$ minimum gate length ($L_{min} = 0.5\,\mu\text{m}$), $2\,\lambda$ gate overhang beyond active diffusion to prevent drain-source bridging.
 - **Contacts**: $2\lambda \times 2\lambda$ cut size with $1\,\lambda$ metal/poly border overlap.
 - **Metal 1**: $3\,\lambda$ minimum interconnect width, $3\,\lambda$ spacing.
-- **Substrate/Well Taps**: Dense guard rings and periodic substrate taps placed within $20\,\mu\text{m}$ of all active transistors to eliminate parasitic SCR latch-up paths.
+- **Substrate/Well Taps & Guard Rings**: Dense guard rings and periodic substrate taps placed within $20\,\mu\text{m}$ of all active transistors to eliminate parasitic SCR latch-up paths.
 
-#### Post-Layout Parasitic Extraction
-Using the Tanner L-Edit extraction engine (`MHP_N05.EXT`), physical geometries were converted into transistor netlists with parasitic area and perimeter capacitances ($C_{diff}, C_{poly}, C_{metal}$):
-- Post-layout inverter delay increased by $14.8\%$ due to parasitic junction loading.
-- DRC clean validation achieved across Inverter, NAND2, NOR2, D-Latch, and 6T SRAM cells.
+#### Layout Implementations & Parasitic Extraction
+1. **4-Input NAND Gate (`NAND4_Layout.tdb`)**: Full-custom layout with matched PMOS pull-up network and series NMOS pull-down chain. Extracted with Tanner `MHP_N05.EXT` into [`NAND4_extracted.sp`](05-physical-vlsi-layout-ledit/post_layout_spice/NAND4_extracted.sp). Post-layout SPICE simulation reveals a **$+14.8\%$ propagation delay increase** over schematic due to parasitic junction and routing capacitance loading.
+2. **4-Bit Dynamic Shift Register (`ShiftRegister_Layout.tdb`)**: Hierarchical silicon mask layout combining master-slave D-Flip-Flop cells (`DFF.sdb`), routing channels, and bidirectional I/O pads (`PadInC`, `PadOut`), fully DRC-clean and extracted into [`ShiftRegister_extracted.sp`](05-physical-vlsi-layout-ledit/post_layout_spice/ShiftRegister_extracted.sp).
 
 <p align="center">
-  <img src="docs/media/layout/ca5_p4_fig1.png" width="48%" alt="Tanner L-Edit Physical CMOS Inverter Mask Layout" />
-  <img src="docs/media/layout/ca5_p6_fig1.png" width="48%" alt="Physical Silicon Layout for 2-Input NAND Gate" />
+  <img src="docs/media/layout/ca5_p4_fig1.png" width="48%" alt="Tanner L-Edit Physical CMOS Mask Layout" />
+  <img src="docs/media/layout/ca5_p6_fig1.png" width="48%" alt="Physical Silicon Layout for Multi-Input Logic Gate" />
 </p>
 
 ---
 
 ## Complete Coursework Portfolio Reports
 
-The complete set of project documentation and original Persian/English coursework reports is archived in [`reports/`](reports/):
+The complete set of project documentation and original coursework reports is archived in [`reports/`](reports/):
 
 | Report Document | Pages | Focus Area | Direct Link |
 |:---|:---:|:---|:---:|
@@ -259,8 +267,8 @@ The complete set of project documentation and original Persian/English coursewor
 | **IEEE Conference Report (LaTeX)** | 6 | Two-Column Academic Paper Source Code | [LaTeX Source](reports/Digital_Integrated_Circuits_VLSI_Report.tex) |
 | **CA1 Report: Inverter VTC & Noise Margins** | 9 | DC curves, sizing optimization, and propagation delays | [CA1 Report PDF](reports/DE_CA1_Inverter_VTC_Noise_Margins_AlirezaNajafi.pdf) |
 | **CA2 Report: Thermal Dynamics & Leakage** | 10 | Thermal sweeps ($0^\circ\text{C}$ to $100^\circ\text{C}$), subthreshold power | [CA2 Report PDF](reports/DE_CA2_Thermal_Power_Leakage_AlirezaNajafi.pdf) |
-| **CA3 Report: Logic Families (DCVSL & Pseudo-NMOS)** | 9 | Benchmarking 3-input NAND across logic families | [CA3 Report PDF](reports/DE_CA3_Logic_Families_DCVSL_AlirezaNajafi.pdf) |
-| **CA4 Report: Complex Gates & 6T SRAM** | 10 | AOI21, TG D-FF, SRAM Read/Write/SNM butterfly curves | [CA4 Report PDF](reports/DE_CA4_Complex_Gates_SRAM_AlirezaNajafi.pdf) |
+| **CA3 Report: Logic Families (DCVSL & Dynamic Logic)** | 9 | Benchmarking Static CMOS, DCVSL, and Dynamic NAND3 | [CA3 Report PDF](reports/DE_CA3_Logic_Families_DCVSL_AlirezaNajafi.pdf) |
+| **CA4 Report: Complex Gates & Memory Pipeline** | 10 | AOI21, TG D-FF, datapath pipeline, and SRAM butterfly curves | [CA4 Report PDF](reports/DE_CA4_Complex_Gates_SRAM_AlirezaNajafi.pdf) |
 | **CA5 Report: Tanner L-Edit Silicon Layout** | 8 | Physical mask design, DRC verification, and SPICE extraction | [CA5 Report PDF](reports/DE_CA5_VLSI_Layout_Tanner_LEdit_AlirezaNajafi.pdf) |
 
 ---
@@ -269,45 +277,58 @@ The complete set of project documentation and original Persian/English coursewor
 
 ### Prerequisites
 - **Synopsys HSPICE** (Version 2013 or newer).
-- **Awan / CosmosScope / AvanWaves** or Python `matplotlib` for waveform inspection.
+- **Awan / CosmosScope / Custom WaveView** or Python `matplotlib` for waveform inspection.
 - **Tanner Tools v13 / v16** (L-Edit for mask layout, S-Edit for schematic capture).
 
 ### Running HSPICE Simulations
 
-#### 1. CMOS Inverter VTC and Noise Margins
+#### 1. CMOS Inverter VTC and Delay Optimization (Module 1)
 ```bash
 cd 01-cmos-inverter-vtc-delay/netlists
 hspice Q1_1.sp -o Q1_1.lis
+hspice Q4.sp -o Q4.lis
 ```
 
-#### 2. Thermal Sweep Simulations
+#### 2. Thermal Sweep & Subthreshold Leakage (Module 2)
 ```bash
 cd 02-thermal-power-leakage-analysis/netlists
-hspice Delay_temp0.sp -o Delay_temp0.lis
 hspice Delay_normal_temp.sp -o Delay_normal.lis
+hspice Delay_temp0.sp -o Delay_temp0.lis
 hspice Delay_temp100.sp -o Delay_temp100.lis
+hspice power_normal.sp -o power_normal.lis
 ```
 
-#### 3. Logic Family Benchmarking
+#### 3. Logic Family Benchmarking (Module 3)
 ```bash
 cd 03-logic-families-dcvsl-pseudo-nmos/netlists
-hspice cmos_3nand.sp -o cmos.lis
-hspice dcvsl_3nand.sp -o dcvsl.lis
-hspice pseudo_nmos_3nand.sp -o pseudo.lis
+hspice CA3-Q1.sp -o CA3-Q1.lis
+hspice CA3-Q2.sp -o CA3-Q2.lis
+hspice STATIC_CMOS.sp -o STATIC_CMOS.lis
+hspice DCVSL.sp -o DCVSL.lis
+hspice NAND3.sp -o NAND3.lis
 ```
 
-#### 4. 6T SRAM Butterfly SNM Simulation
+#### 4. Sequential Logic & Memory Pipeline (Module 4)
 ```bash
 cd 04-sequential-circuits-sram-memory/netlists
-hspice sram_snm_butterfly.sp -o snm.lis
+hspice AOI21.sp -o AOI21.lis
+hspice register.sp -o register.lis
+hspice MEMORY.sp -o MEMORY.lis
+```
+
+#### 5. Post-Layout Parasitic Netlist Simulation (Module 5)
+```bash
+cd 05-physical-vlsi-layout-ledit/post_layout_spice
+hspice NAND4_extracted.sp -o NAND4_extracted.lis
 ```
 
 ### Opening Physical Layouts in Tanner L-Edit
 1. Launch **Tanner L-Edit**.
-2. Open design database: `05-physical-vlsi-layout-ledit/layouts/inverter.tdb`.
-3. Load technology file: `05-physical-vlsi-layout-ledit/tech/MHP_N05.TDB`.
-4. Run DRC: **Tools -> DRC -> Run DRC** (verify zero violations).
-5. Extract SPICE netlist: **Tools -> Extract -> Run Extract** using `MHP_N05.EXT`.
+2. Open design database: `05-physical-vlsi-layout-ledit/layout/NAND4_Layout.tdb` or `ShiftRegister_Layout.tdb`.
+3. Load technology setup file: `05-physical-vlsi-layout-ledit/tech/MHP_N05.TDB`.
+4. Run DRC: **Tools -> DRC -> Run DRC** (verify zero design rule violations).
+5. Inspect cross-sections with `05-physical-vlsi-layout-ledit/tech/MHP_N05.XST`.
+6. Extract SPICE netlist: **Tools -> Extract -> Run Extract** using setup file `MHP_N05.EXT`.
 
 ---
 
@@ -328,3 +349,4 @@ hspice sram_snm_butterfly.sp -o snm.lis
 2. **S. M. Kang and Y. Leblebici**, *CMOS Digital Integrated Circuits: Analysis and Design*, 3rd Edition, McGraw-Hill, 2003.
 3. **N. H. E. Weste and D. M. Harris**, *CMOS VLSI Design: A Circuits and Systems Perspective*, 4th Edition, Addison-Wesley, 2011.
 4. **MOSIS SCMOS Design Rules**, MOSIS Integrated Circuit Layout Standards, Rev 8.0.
+5. **Predictive Technology Model (PTM)**, Nanoscale CMOS Transistor Models, Arizona State University.
