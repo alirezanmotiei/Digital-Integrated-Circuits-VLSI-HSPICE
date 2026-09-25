@@ -1,0 +1,18 @@
+# ==============================================================================
+# Git Attributes - Language Detection & Overrides for VLSI-HSPICE
+# ==============================================================================
+
+# Vendor foundry PDK model cards so 3.7MB .l files are not misclassified as Roff
+*.l linguist-vendored
+*.lib linguist-vendored
+*.txt linguist-vendored
+
+# Associate SPICE netlists and decks as high-level detectable hardware code
+*.sp linguist-detectable=true linguist-language=C
+*.cir linguist-detectable=true linguist-language=C
+
+# Documentation & Assets
+docs/* linguist-documentation
+reports/* linguist-documentation
+*.pdf linguist-documentation
+*.png linguist-documentation
