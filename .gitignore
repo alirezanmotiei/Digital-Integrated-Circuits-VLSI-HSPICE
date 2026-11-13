@@ -42,3 +42,9 @@ Desktop.ini
 .DS_Store
 .vscode/
 .idea/
+
+# Foundry PDK Model Libraries (NDA-Protected)
+crn90g*.l
+*.lib
+*.mdl
+

@@ -41,7 +41,7 @@ Digital-Integrated-Circuits-VLSI-HSPICE/
 │       └── 0.5micron.lib                           # BSIM3 Level-49 0.5µm reference model
 ├── 02-thermal-power-leakage-analysis/              # Module 2: Thermal & Leakage Characteristics (TSMC 90nm)
 │   └── netlists/
-│       ├── crn90g_2d5_lk_v1d2p1.l                  # TSMC 90nm Low-Leakage Foundry PDK model
+│       └── MODEL_NOTICE.md                         # NDA notice for excluded TSMC 90nm PDK model library
 │       ├── Delay_normal_temp.sp                    # Propagation delay at T = 25°C
 │       ├── Delay_temp0.sp                          # Propagation delay at T = 0°C
 │       ├── Delay_temp100.sp                        # Propagation delay at T = 100°C
@@ -144,7 +144,7 @@ The table below summarizes representative parametric sizing measurements from th
 ### 2. Thermal Sensitivity & Subthreshold Leakage (`02-thermal-power-leakage-analysis`)
 
 #### Carrier Mobility & Threshold Voltage Temperature Dependence
-Simulated on the **TSMC 90nm Low-Leakage PDK** (`crn90g_2d5_lk`, $V_{DD} = 1.0\,\text{V}$). As die temperature rises, increased thermal vibrations of the crystal silicon lattice enhance acoustic phonon scattering, reducing effective carrier mobility:
+Simulated on the **TSMC 90nm Low-Leakage PDK** (`crn90g_2d5_lk`, foundry model file excluded from this public repository for NDA compliance, $V_{DD} = 1.0\,\text{V}$). As die temperature rises, increased thermal vibrations of the crystal silicon lattice enhance acoustic phonon scattering, reducing effective carrier mobility:
 
 $$\mu(T) = \mu(T_0) \left(\frac{T}{T_0}\right)^{-1.5}$$
 
